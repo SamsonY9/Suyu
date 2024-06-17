@@ -1,4 +1,4 @@
-<img src="C:\Users\11943\Desktop\-JSON\json\json图标.png" style="zoom: 80%;" />
+<img src="json\json图标.png" style="zoom: 80%;" />
 
 ​                                                                                      <span style=color:red;background:yellow>**---Created by Suyu**</span>
 
@@ -20,11 +20,11 @@
 >
 >  ​	                      <span style=color:red;background:yellow>**通过简单的一条字符串可以记录多层结构的数据**</span>
 >
->  <img src="C:\Users\11943\Desktop\-JSON\json\Json树形结构.png" style="zoom: 50%;" />
+>  <img src="json\Json树形结构.png" style="zoom: 50%;" />
 >
 >  **~当然可以记录不同类型的文本数据不只有JSON，XML也可以 √。**
 >
->  ![](C:\Users\11943\Desktop\-JSON\json\xml-JSON.png)
+>  ![](json\xml-JSON.png)
 >
 >  不过当文本数据量大结构复杂XML在流式处理，易读性上更胜一筹，比如HTML，SVG实质上是建立在XML之上的。
 >
@@ -56,7 +56,7 @@
 
 > **Json支持的6种值类型：**
 >
-> ![](C:\Users\11943\Desktop\-JSON\json\JSON数据类型.png)
+> ![](json\JSON数据类型.png)
 >
 > **<常规值类型>**
 >
@@ -243,7 +243,7 @@ Eg：来看个小例子吧~~
 >
 > 方法二：下载**zip包**，通过第三方软件(winsp)上传到服务器上(虚拟机VM也可以直接拖) <span style=color:red;background:yellow>**记得解压压缩包 ！！！**</span>
 >
-> <img src="C:\Users\11943\Desktop\-JSON\json\github下载.png" style="zoom:50%;" />
+> <img src="json\github下载.png" style="zoom:50%;" />
 
 ```cmd
 进入 --> https://github.com/open-source-parsers/jsoncpp/tree/update
@@ -275,11 +275,11 @@ make   // Make 工具读取 CMake 生成的 Makefile 并执行编译过程,调�
 find -name *.a   // 再执行查找语句，就会发现静态库已经创建好了
 ```
 
-![](C:\Users\11943\Desktop\-JSON\json\安装步骤1.png)
+![](json\安装步骤1.png)
 
-![](C:\Users\11943\Desktop\-JSON\json\安装步骤2.png)
+![](json\安装步骤2.png)
 
-![](C:\Users\11943\Desktop\-JSON\json\安装步骤3.png)
+![](json\安装步骤3.png)
 
 > 3.复制相关文件至`/usr/local`下**(方便编程)**
 
