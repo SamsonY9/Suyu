@@ -324,23 +324,27 @@ using namespace Json;
 > | arrayValue   | array value (ordered list)                    | 表示数组，即JSON串中的[]   |
 > | objectValue  | object value (collection of name/value pairs) | 表示键值对，即JSON串中的{} |
 
-#### 构造函数
+#### 构造函数 -> 封装数据
 
 Value类为我们提供了很多构造函数，通过构造函数来封装数据，最终得到一个统一的类型。
 
+在 `C++` 中，函数（包括构造函数）调用的选择是通过**函数重载机制**实现的。编译器根据传递的参数类型自动选择最匹配的构造函数。
+
+在 `JsonCpp` 中，`Json::Value` 类有多个构造函数重载，编译器将根据提供的参数类型选择适当的构造函数。
+
 > ```c++
 > // 因为Json::Value已经实现了各种数据类型的构造函数
-> Value(ValueType type = nullValue);
+> Value(ValueType type = nullValue);         // 构造函数根据指定的类型初始化一个 Json::Value 对象。ValueType 是一个枚举类型
 > Value(Int value);
 > Value(UInt value);
 > Value(Int64 value);
 > Value(UInt64 value);
-> Value(double value);
-> Value(const char* value);
-> Value(const char* begin, const char* end);
-> Value(bool value);
-> Value(const Value& other);
-> Value(Value&& other);
+> Value(double value);				
+> Value(const char* value);				   // 构造函数接受一个 C 字符串并初始化一个 Json::Value 对象。
+> Value(const char* begin, const char* end); // 构造函数接受两个指针，表示一个字符数组的起始和结束位置，并用它们初始化一个 Json::Value 对象。
+> Value(bool value);		
+> Value(const Value& other);				   // 构造函数接受另一个 Json::Value 对象并创建其副本
+> Value(Value&& other);                       // 构造函数接受一个右值引用的 Json::Value 对象并移动其内容。
 > ```
 
 #### 检测保存的数据类型
@@ -363,6 +367,10 @@ Value类为我们提供了很多构造函数，通过构造函数来封装数据
 
 #### 将Value对象转换为实际类型
 
+> `JsonCpp` 中，`Json::Value` 对象可以包含多种类型的数据，包括整数、无符号整数、64 位整数、64 位无符号整数、双精度浮点数、字符串、布尔值、数组和对象
+>
+> 等。要将 `Json::Value` 对象转换为实际类型，可以使用相应的类型转换方法。
+
 ```c++
 Int asInt() const;
 UInt asUInt() const;
@@ -379,42 +387,71 @@ const char* asCString() const;
 
 #### 对json数组的操作
 
+> `Json::Value` 类提供了一组方法和运算符，用于处理 JSON 数组。这些方法和运算符允许访问、修改和遍历 JSON 数组。
+
 ```c++
-ArrayIndex size() const;
-Value& operator[](ArrayIndex index);
-Value& operator[](int index);
-const Value& operator[](ArrayIndex index) const;
-const Value& operator[](int index) const;
+ArrayIndex size() const;									// 返回数组的大小（元素数量）
+Value& operator[](ArrayIndex index);						// 通过数组下标访问或修改数组中的元素（非 const 版本）
+Value& operator[](int index);								// 通过整数下标访问或修改数组中的元素（非 const 版本）
+const Value& operator[](ArrayIndex index) const;			// 通过数组下标访问数组中的元素（const 版本）
+const Value& operator[](int index) const;					// 通过整数下标访问数组中的元素（const 版本）
 // 根据下标的index返回这个位置的value值
 // 如果没找到这个index对应的value, 返回第二个参数defaultValue
 Value get(ArrayIndex index, const Value& defaultValue) const;
-Value& append(const Value& value);
-const_iterator begin() const;
+Value& append(const Value& value);							// 在数组的末尾添加一个新元素
+const_iterator begin() const;								// 返回数组的常量迭代器，分别指向数组的起始位置和结束位置。这些迭代器可以用于遍历数组而不修改其内容。
 const_iterator end() const;
-iterator begin();
+iterator begin();											// 返回数组的迭代器，分别指向数组的起始位置和结束位置。这些迭代器可以用于遍历和修改数组。
 iterator end();
 ```
 
 #### 对json对象的操作
 
+> JSON 对象由**键值对组成**，通过键来访问对应的值。
+
 ```c++
-Value& operator[](const char* key);
-const Value& operator[](const char* key) const;
-Value& operator[](const JSONCPP_STRING& key);
-const Value& operator[](const JSONCPP_STRING& key) const;
-Value& operator[](const StaticString& key);
+Value& operator[](const char* key);                                    // 通过键访问或修改对象中的值（非 const 版本）
+const Value& operator[](const char* key) const;						   // 通过键访问对象中的值（const 版本）
+Value& operator[](const JSONCPP_STRING& key);							// 通过 JSONCPP_STRING 类型的键访问或修改对象中的值（非 const 版本）
+const Value& operator[](const JSONCPP_STRING& key) const;				// 通过 JSONCPP_STRING 类型的键访问对象中的值（const 版本）
+Value& operator[](const StaticString& key);								// 通过 StaticString 类型的键访问或修改对象中的值（非 const 版本）
 
 // 通过key, 得到value值
-Value get(const char* key, const Value& defaultValue) const;
-Value get(const JSONCPP_STRING& key, const Value& defaultValue) const;
-Value get(const CppTL::ConstString& key, const Value& defaultValue) const;
+Value get(const char* key, const Value& defaultValue) const;			// 通过键获取对象中的值，如果键不存在则返回默认值
+Value get(const JSONCPP_STRING& key, const Value& defaultValue) const;   // 通过 JSONCPP_STRING 类型的键获取对象中的值，如果键不存在则返回默认值
+Value get(const CppTL::ConstString& key, const Value& defaultValue) const;// 通过 CppTL::ConstString 类型的键获取对象中的值，如果键不存在则返回默认值
 
 // 得到对象中所有的键值
 typedef std::vector<std::string> Members;
 Members getMemberNames() const;
+
+/*
+----- 可以了解一下 ------
+**《注》** `JSONCPP_STRING` 是 JsonCpp 库中定义的一种字符串类型，它是对标准库中的 `std::string` 的封装，目的是为了提供跨平台的支持和更好的性能。在JsonCpp 中，`JSONCPP_STRING` 的定义可能会因版本而异，但通常它是一个指向 `std::string` 的类型别名或一个简单的字符串类。
+
+`JSONCPP_STRING` 主要有以下几个特点和用法：
+1. **类型别名或简单类**：在 JsonCpp 的实现中，`JSONCPP_STRING` 可能被定义为 `std::string` 或一个类似 `std::string` 的简单字符串类。这样做的目的是
+为了使 JsonCpp 在不同的平台上具有一致的行为和性能表现。
+2. **跨平台支持**：由于不同平台上的标准库实现可能有所不同，使用 `JSONCPP_STRING` 可以确保 JsonCpp 在各种环境下的可移植性和稳定性。
+3. **使用方式**：一般情况下，你可以像使用 `std::string` 一样使用 `JSONCPP_STRING`。例如，作为 `Json::Value` 的键，或者作为 `Json::Value` 的 `get` 方法的参数。
+
+尽管 `JSONCPP_STRING` 可能不会直接暴露其具体实现细节，但可以将其视为 `std::string` 的一种安全和可移植的替代品，用于 JsonCpp 中的字符串操作。
+  
+  同理，`CppTL::ConstString` 是在 JsonCpp 库中使用的另一种字符串类型，类似于 `JSONCPP_STRING`，它也是为了跨平台的支持和更好的性能而设计的。在 
+JsonCpp 中，`CppTL::ConstString` 通常也是一个对 `std::string` 或类似类型的封装或别名。
+
+`CppTL::ConstString` 主要有以下几个特点和用法：
+1. **类型别名或简单类**：在 JsonCpp 的实现中，`CppTL::ConstString` 可能被定义为 `std::string` 或一个类似 `std::string` 的简单字符串类。这种设计旨
+   在提供一致的行为和性能，确保 JsonCpp 在各种环境下的可移植性和稳定性。
+2. **常量字符串**：从名称可以看出，`CppTL::ConstString` 可能强调其常量特性，即可能是一个只读的字符串类型，适用于不需要修改的字符串场景。
+3. **跨平台支持**：与 `JSONCPP_STRING` 类似，使用 `CppTL::ConstString` 可以确保 JsonCpp 在不同平台上的行为一致，并且提供了良好的性能表现。
+4. **使用方式**：一般情况下，你可以像使用 `std::string` 一样使用 `CppTL::ConstString`。例如，作为 `Json::Value` 的键，或者作为 `Json::Value` 的`get` 方法的参数。
+    */
 ```
 
 #### 将Value对象数据序列化为string
+
+> 用于将 JSON 对象或数组序列化为带有格式的字符串，以便于阅读和写入配置文件等场景。这个方法会生成带有缩进和换行的格式化字符串，使得 JSON 数据结构在文本文件中更加可读和易于理解。
 
 ```c++
 // 序列化得到的字符串有样式 -> 带换行 -> 方便阅读
@@ -422,13 +459,89 @@ Members getMemberNames() const;
 std::string toStyledString() const;
 ```
 
+```c++
+#include <json/json.h>
+#include <iostream>
+
+int main() {
+    Json::Value root;
+    root["name"] = "John";
+    root["age"] = 30;
+    root["isStudent"] = true;
+
+    Json::Value hobbies(Json::arrayValue);
+    hobbies.append("Reading");
+    hobbies.append("Gaming");
+    root["hobbies"] = hobbies;
+
+    // 使用 toStyledString() 方法将 Json::Value 转换为带有样式的字符串
+    std::string styledJson = root.toStyledString();
+
+    // 输出带有样式的 JSON 字符串
+    std::cout << "Styled JSON:" << std::endl;
+    std::cout << styledJson << std::endl;
+
+    return 0;
+}
+---------------------------------------------------------------------------------------------------------------------------------------------------
+// 输出结果：
+Styled JSON:
+{
+   "name": "John",
+   "age": 30,
+   "isStudent": true,
+   "hobbies": [
+      "Reading",
+      "Gaming"
+   ]
+}
+
+```
+
+>  `toStyledString()` 方法生成的字符串会包含缩进和换行符，以增强可读性。这在写入配置文件或需要手动查看 JSON 数据时特别有用。尽管带有样式的字符串对于
+>
+>人类阅读很友好，但在传输或存储大量数据时，通常建议使用 `toJsonString()` 方法生成紧凑的 JSON 字符串，以减少空间占用和传输时间。
+>
+>  在实际使用中，可以根据具体需求选择适合的方法，如 `toStyledString()` 或 `toJsonString()`，来序列化 `Json::Value` 对象。
+
 ### 4.2.2 FastWriter 类
+
+> 使用 `Json::FastWriter` 的 `write` 方法可以将 `Json::Value` 对象序列化为单行的 JSON 字符串，适合用于网络传输或者需要紧凑格式的场景。`FastWriter` 是 JsonCpp 提供的一种快速的 JSON 写入器，生成的 JSON 字符串通常是最小化格式的，即不包含额外的空白字符（如换行符和缩进）。
 
 ```c++
 // 将数据序列化 -> 单行
 // 进行数据的网络传输
 std::string Json::FastWriter::write(const Value& root);
+-------------------------------------------------------------------------------------------------------------------------------------------------
+#include <json/json.h>
+#include <iostream>
+
+int main() {
+    Json::Value root;
+    root["name"] = "John";
+    root["age"] = 30;
+    root["isStudent"] = true;
+
+    // 创建 FastWriter 对象
+    Json::FastWriter writer;
+
+    // 使用 FastWriter 的 write 方法将 Json::Value 转换为单行的 JSON 字符串
+    std::string jsonString = writer.write(root);
+
+    // 输出单行的 JSON 字符串
+    std::cout << "Single line JSON:" << std::endl;
+    std::cout << jsonString << std::endl;
+
+    return 0;
+}
+----------------------------------------------------------------------------------------------------------------------------------------------------
+// 运行结果
+Single line JSON:
+{"name":"John","age":30,"isStudent":true}
+
 ```
+
+> `FastWriter` 的 `write` 方法生成的 JSON 字符串是紧凑的，适合于网络传输和占用空间较少的场景。虽然单行 JSON 字符串在传输和存储上更有效率，但在人类可读性方面可能不如带有格式的字符串（如使用 `Json::Value::toStyledString()` 方法）友好。在实际应用中，根据需求选择合适的 JSON 字符串生成方式：使用 `FastWriter` 的 `write` 方法生成紧凑的单行 JSON，或使用 `Json::Value::toStyledString()` 方法生成带有样式的易读 JSON。
 
 ### 4.2.3 Reader 类
 
@@ -530,12 +643,14 @@ void readJson() {
     // 1. 将磁盘文件中的json字符串读到磁盘文件
     ifstream ifs("test.json");
     // 2. 反序列化 -> value对象
+    // 创建 Json::Value 对象 root 用于存储解析后的 JSON 数据。
+    // 使用 Json::Reader 对象 r 的 parse 方法将文件流 ifs 中的 JSON 数据解析到 root 对象中。
     Value root;
     Reader r;
     r.parse(ifs, root);
     // 3. 从value对象中将数据依次读出
     if (root.isArray()) {
-        // 数组, 遍历数组
+        // 如果根节点是数组，则遍历数组
         for (int i = 0; i < root.size(); ++i) {
             // 依次取出各个元素, 类型是value类型
             Value item = root[i];
@@ -549,14 +664,15 @@ void readJson() {
             } else if (item.isDouble()) {
                 cout << item.asFloat() << ", ";
             } else if (item.isArray()) {
+                // 如果是数组，则遍历数组元素
                 for (int j = 0; j < item.size(); ++j) {
                     cout << item[j].asString() << ", ";
                 }
             } else if (item.isObject()) {
-                // 对象
-                // 得到所有的key
+                // 如果是对象，则获取所有的键值对
                 Value::Members keys = item.getMemberNames();
                 for (int k = 0; k < keys.size(); ++k) {
+                    // 输出键和对应的值
                     cout << keys.at(k) << ":" << item[keys[k]] << ", ";
                 }
             }
@@ -568,7 +684,11 @@ void readJson() {
 }
 ```
 
-> 在上面读Json文件的这段代码中，对读出的每个Value类型的节点进行了类型判断，<span style=color:red;background:yellow>**其实一般情况下是不需要做这样的判断的**</span>，因为我们在解析的时候是明确地知道该节点的类型的。虽然Json这种格式无外乎数组和对象两种，但是需求不同我们设计的Json文件的组织方式也不同，一般都是特定的文件对应特定的解析函数，一个解析函数可以解析任何的Json文件这种设计思路是坚决不推荐的。
+> 在上面读Json文件的这段代码中，对读出的每个Value类型的节点进行了类型判断，<span style=color:red;background:yellow>**其实一般情况下是不需要做这样的判断的**</span>，因为我们在解析的时候是明确地知道该节
+>
+> 点的类型的。虽然Json这种格式无外乎数组和对象两种，但是需求不同我们设计的Json文件的组织方式也不同，一般都是特定的文件对应特定的解析函数，一个解析函数
+>
+> 可以解析任何的Json文件这种设计思路是坚决不推荐的。
 
 
 ​		
